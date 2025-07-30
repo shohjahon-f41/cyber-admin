@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
-import { menuSidebar } from '../constants/MenuSidebar';
+import React, { useState } from "react";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { Button, Layout, Menu, theme } from "antd";
+import { menuSidebar } from "../constants/MenuSidebar";
+import { Route, Routes } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 const AdminLayot = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -21,7 +16,7 @@ const AdminLayot = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={["1"]}
           items={menuSidebar}
         />
       </Sider>
@@ -32,7 +27,7 @@ const AdminLayot = () => {
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: '16px',
+              fontSize: "16px",
               width: 64,
               height: 64,
             }}
@@ -40,14 +35,18 @@ const AdminLayot = () => {
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
+            margin: "24px 16px",
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          <Routes>
+            {routes.map((item) => (
+              <Route path={item.path} element={item.element}></Route>
+            ))}
+          </Routes>
         </Content>
       </Layout>
     </Layout>

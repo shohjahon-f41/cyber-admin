@@ -1,13 +1,14 @@
 import {
-    DashboardOutlined,
+  DashboardOutlined,
   ProductOutlined,
   WindowsOutlined,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
+import { Link } from "react-router-dom";
 export const menuSidebar = [
   {
     key: "1",
     icon: <DashboardOutlined />,
-    label: "Dashboard",
+    label: <Link />,
   },
   {
     key: "2",
@@ -20,4 +21,3 @@ export const menuSidebar = [
     label: "Brands",
   },
 ];
-// 26-33

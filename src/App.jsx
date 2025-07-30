@@ -1,11 +1,16 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Spin from "./components/Spin";
+import { useState } from "react";
 
 const Login = lazy(() => import("./pages/Login"));
 const Admin = lazy(() => import("./components/Admin"));
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : "")
+
+  useEffect(() => {setToken(token)}, token);
+  // 15:25
   return (
     <AnimatePresence mode="wait">
       <Suspense fallback={<Spin />}>
@@ -17,7 +22,8 @@ function App() {
           transition={{ duration: 0.4 }}
           style={{ height: "100%" }}
         >
-          <Login />
+          {token.length > 0 ? <Admin /> : <Login />}
+          {/* <Login /> */}
           {/* <Admin /> */}
         </motion.div>
       </Suspense>
