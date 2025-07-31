@@ -3,6 +3,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { menuSidebar } from "../constants/MenuSidebar";
 import { Route, Routes } from "react-router-dom";
+import { routes } from "../constants/routes";
 const { Header, Sider, Content } = Layout;
 const AdminLayot = () => {
   const [collapsed, setCollapsed] = useState(false);

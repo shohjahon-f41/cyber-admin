@@ -8,16 +8,18 @@ export const menuSidebar = [
   {
     key: "1",
     icon: <DashboardOutlined />,
-    label: <Link />,
+    label: <Link to="/">Dashboard</Link>,
   },
   {
     key: "2",
     icon: <ProductOutlined />,
-    label: "Products",
+    label: <Link to="/products">Products</Link>,
+
   },
   {
     key: "3",
     icon: <WindowsOutlined />,
-    label: "Brands",
+    label: <Link to="/category">Category</Link>,
+
   },
 ];
