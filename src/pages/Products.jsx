@@ -6,19 +6,25 @@ import {
   Image,
   Input,
   InputNumber,
+  Popconfirm,
   Space,
+  Spin,
   Switch,
   Table,
 } from "antd";
-// import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import axios from "axios";
+import React, { use, useEffect, useState } from "react";
 import { API } from "../api";
 import { urls } from "../constants/urls";
 import TextArea from "antd/es/input/TextArea";
+import ProductDrawer from "../components/ProductDrawer";
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const showDrawer = () => {
     setDrawerOpen(true);
   };
@@ -27,10 +33,15 @@ function Products() {
   };
 
   function getProducts() {
-    API.get(urls.products.get).then((res) => setProducts(res.data));
+    setLoading(true);
+    onClose()
+    API.get(urls.products.get)
+      .then((res) => setProducts(res.data))
+      .finally(() => setLoading(false));
   }
   useEffect(() => getProducts(), []);
-  const colums = [
+
+  const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     {
       title: "Image",
@@ -43,17 +54,37 @@ function Products() {
     {
       title: "Action",
       key: "action",
-      render: () => (
+      render: (item) => (
         <Space>
           <Button>Edit</Button>
-          <Button danger>Remove</Button>
+          <Popconfirm
+            title="Delete the product"
+            description="Are you sure to delete this product?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => {
+              handleDelete(item);
+            }}
+          >
+            <Button danger>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
+  const handleDelete = (element) => {
+    API.delete(urls.products.delete(element.id)).then((res) =>{if (res.status===200){getProducts()}}).catch((err) => console.log(err));
+  };
+
   const onFinish = (value) => {
     console.log(value);
+    onClose();
+    getProducts();
+    API.post(urls.products.post, value)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+      // 17:58
   };
 
   return (
@@ -68,82 +99,18 @@ function Products() {
           + Add Product
         </Button>
       </Flex>
-      <Table dataSource={products} columns={colums} />
-      <Drawer
-        title="Add Product"
+      {loading ? (
+        <Flex justify="center" align="center" style={{ height: 200 }}>
+          <Spin indicator={<LoadingOutlined spin />} size="large" />
+        </Flex>
+      ) : (
+        <Table dataSource={products} columns={columns} rowKey="id" />
+      )}
+      <ProductDrawer
         onClose={onClose}
-        width={500}
-        open={drawerOpen}
-      >
-        <Form name="product-form" onFinish={onFinish} autoComplete="on">
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: "Please input product name!" }]}
-          >
-            <Input placeholder="Enter Name of Product" />
-          </Form.Item>
-          <Form.Item
-            label="Image"
-            name="image"
-            rules={[
-              { required: true, message: "Please input product image link!" },
-              { type: "url" },
-            ]}
-          >
-            <Input placeholder="Enter Product Image Link" />
-          </Form.Item>
-          <Form.Item
-            label="Description"
-            name="desc"
-            rules={[
-              { required: true, message: "Please input product description!" },
-            ]}
-          >
-            <Input.TextArea placeholder="Enter Product Description" />
-          </Form.Item>
-          <Form.Item
-            label="Price"
-            name="price"
-            rules={[
-              { required: true, message: "Please input product price!" },
-              { type: "number" },
-            ]}
-          >
-            <InputNumber
-              min={0}
-              placeholder="Enter Product Price"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Old Price"
-            name="old_price"
-            rules={[
-              { required: true, message: "Please input product old price!" },
-            ]}
-          >
-            <InputNumber
-              min={0}
-              placeholder="Enter Product Old Price"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Is Popular"
-            name="is_popular"
-            rules={[{ required: true }]}
-          >
-            <Switch />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" size="large" style={{ width: "100%" }}>
-              Add Product
-            </Button>
-            {/* 43:08 */}
-          </Form.Item>
-        </Form>
-      </Drawer>
+        drawerOpen={drawerOpen}
+        onFinish={onFinish}
+      />
     </>
   );
 }
