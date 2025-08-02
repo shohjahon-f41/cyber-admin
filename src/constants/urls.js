@@ -2,7 +2,7 @@ export const urls = {
     products: {
         get: "/products",
         post: "/products",
-        patch: "/products",
-        delete: (id) => `/products/${id}`
-    }
+        patch: (id) => `/products/${id}`,
+        delete: (id) => `/products/${id}`,
+    },
 };

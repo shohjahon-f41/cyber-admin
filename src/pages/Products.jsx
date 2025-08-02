@@ -24,6 +24,7 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editingData, setEditingData] = useState(null);
 
   const showDrawer = () => {
     setDrawerOpen(true);
@@ -34,7 +35,7 @@ function Products() {
 
   function getProducts() {
     setLoading(true);
-    onClose()
+    onClose();
     API.get(urls.products.get)
       .then((res) => setProducts(res.data))
       .finally(() => setLoading(false));
@@ -56,7 +57,7 @@ function Products() {
       key: "action",
       render: (item) => (
         <Space>
-          <Button>Edit</Button>
+          <Button onClick={() => handleEdit(item)}>Edit</Button>
           <Popconfirm
             title="Delete the product"
             description="Are you sure to delete this product?"
@@ -72,19 +73,29 @@ function Products() {
       ),
     },
   ];
+  function handleEdit(el) {
+    setEditingData(el);
+    setDrawerOpen(true);
+  }
 
   const handleDelete = (element) => {
-    API.delete(urls.products.delete(element.id)).then((res) =>{if (res.status===200){getProducts()}}).catch((err) => console.log(err));
+    API.delete(urls.products.delete(element.id))
+      .then((res) => {
+        if (res.status === 200) {
+          getProducts();
+        }
+      })
+      .catch((err) => console.log(err))
   };
 
   const onFinish = (value) => {
     console.log(value);
-    onClose();
-    getProducts();
     API.post(urls.products.post, value)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
-      // 17:58
+    onClose();
+    getProducts();
+    // 17:58
   };
 
   return (
@@ -107,9 +118,11 @@ function Products() {
         <Table dataSource={products} columns={columns} rowKey="id" />
       )}
       <ProductDrawer
-        onClose={onClose}
+        setDrawerOpen={setDrawerOpen}
         drawerOpen={drawerOpen}
-        onFinish={onFinish}
+        getProducts={getProducts}
+        editingData={editingData}
+        setEditingData={setEditingData}
       />
     </>
   );

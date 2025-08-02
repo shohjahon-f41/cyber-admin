@@ -1,16 +1,70 @@
 import { Button, Drawer, Form, Input, InputNumber, Switch } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
+import { API } from "../api";
+import { urls } from "../constants/urls";
+import { tr } from "framer-motion/client";
 
-function ProductDrawer({onClose, drawerOpen, onFinish}) {
+function ProductDrawer({
+  setDrawerOpen,
+  drawerOpen,
+  getProducts,
+  editingData,
+  setEditingData,
+}) {
+  const [form] = Form.useForm();
+
+  const onClose = () => {
+    form.resetFields();
+    setDrawerOpen(false);
+    getProducts();
+    setEditingData(null);
+  };
+
+  useEffect(() => {
+    form.setFieldsValue(editingData);
+  }, [editingData]);
+
+  const onFinish = (value) => {
+    // value === null ? value
+    value ={
+      ...value,
+      is_popular: value.is_popular && false
+    }
+    value
+    if (editingData === null) {
+      API.post(urls.products.post, value)
+        .then((res) => {
+          console.log(res);
+
+          if (res.status === 201) {
+            onClose();
+          }
+        })
+        .catch((err) => console.error(err));
+    } else {
+      API.patch(urls.products.patch(editingData.id), value)
+        .then((res) => {
+          if (res.status === 200) {
+            onClose();
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  };
   return (
     <>
       <Drawer
-        title="Add Product"
+        title={`${editingData === null ? "Add" : "Edit"} Product`}
         onClose={onClose}
         width={500}
         open={drawerOpen}
       >
-        <Form name="product-form" onFinish={onFinish} autoComplete="on">
+        <Form
+          name="product-form"
+          form={form}
+          onFinish={onFinish}
+          autoComplete="on"
+        >
           <Form.Item
             label="Name"
             name="name"
@@ -67,7 +121,7 @@ function ProductDrawer({onClose, drawerOpen, onFinish}) {
           <Form.Item
             label="Is Popular"
             name="is_popular"
-            rules={[{ required: true }]}
+            rules={[{ required: false }]}
           >
             <Switch />
           </Form.Item>
@@ -78,9 +132,8 @@ function ProductDrawer({onClose, drawerOpen, onFinish}) {
               size="large"
               style={{ width: "100%" }}
             >
-              Add Product
+              {editingData === null ? "Add" : "Edit"} Product
             </Button>
-            {/* 43:08 */}
           </Form.Item>
         </Form>
       </Drawer>
