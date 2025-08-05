@@ -1,5 +1,5 @@
 import { Button, Drawer, Form, Input, InputNumber, Switch } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { API } from "../api";
 import { urls } from "../constants/urls";
 import { tr } from "framer-motion/client";
@@ -12,11 +12,12 @@ function ProductDrawer({
   setEditingData,
 }) {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const onClose = () => {
     form.resetFields();
-    setDrawerOpen(false);
     getProducts();
+    setDrawerOpen(false);
     setEditingData(null);
   };
 
@@ -26,11 +27,12 @@ function ProductDrawer({
 
   const onFinish = (value) => {
     // value === null ? value
-    value ={
-      ...value,
-      is_popular: value.is_popular && false
-    }
-    value
+    // value = {
+    //   ...value,
+    //   is_popular: value.is_popular && false,
+    // };
+    // value;
+    setLoading(true);
     if (editingData === null) {
       API.post(urls.products.post, value)
         .then((res) => {
@@ -40,7 +42,10 @@ function ProductDrawer({
             onClose();
           }
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error(err))
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       API.patch(urls.products.patch(editingData.id), value)
         .then((res) => {
@@ -48,7 +53,9 @@ function ProductDrawer({
             onClose();
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err)).finally(() => {
+          setLoading(false);
+        });
     }
   };
   return (
@@ -64,6 +71,7 @@ function ProductDrawer({
           form={form}
           onFinish={onFinish}
           autoComplete="on"
+          initialValues={{ is_popular: false }}
         >
           <Form.Item
             label="Name"
@@ -121,13 +129,14 @@ function ProductDrawer({
           <Form.Item
             label="Is Popular"
             name="is_popular"
-            rules={[{ required: false }]}
+            valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
+              loading={loading}
               htmlType="submit"
               size="large"
               style={{ width: "100%" }}

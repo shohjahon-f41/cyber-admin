@@ -1,4 +1,5 @@
 import {
+  BarChartOutlined,
   DashboardOutlined,
   ProductOutlined,
   WindowsOutlined,
@@ -6,20 +7,28 @@ import {
 import { Link } from "react-router-dom";
 export const menuSidebar = [
   {
-    key: "1",
+    key: "/",
     icon: <DashboardOutlined />,
-    label: <Link to="/">Dashboard</Link>,
+    label: "Dashboard",
+    path: "/",
   },
   {
-    key: "2",
+    key: "/products",
     icon: <ProductOutlined />,
-    label: <Link to="/products">Products</Link>,
-
+    label: "Products",
+    path: "/products",
   },
   {
-    key: "3",
+    key: "/brands",
     icon: <WindowsOutlined />,
-    label: <Link to="/category">Category</Link>,
+    label: "Brands",
+    path: "/brands",
+  },
+  {
+    key: "/categories",
+    icon: <BarChartOutlined />,
+    label: 'Category',
+    path: "/categories"
 
   },
 ];

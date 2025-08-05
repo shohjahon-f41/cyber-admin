@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { menuSidebar } from "../constants/MenuSidebar";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import { routes } from "../constants/routes";
 const { Header, Sider, Content } = Layout;
 const AdminLayot = () => {
@@ -11,14 +11,17 @@ const AdminLayot = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   return (
-    <Layout>
+    <Layout >
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
-          items={menuSidebar}
+          defaultSelectedKeys={location.pathname}
+          items={menuSidebar.map((item) => ({
+            ...item,
+            label: <Link to={item.path}>{item.label}</Link>,
+          }))}
         />
       </Sider>
       <Layout>
