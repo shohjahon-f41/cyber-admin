@@ -17,7 +17,6 @@ import axios from "axios";
 import React, { use, useEffect, useState } from "react";
 import { API } from "../api";
 import { urls } from "../constants/urls";
-import TextArea from "antd/es/input/TextArea";
 import ProductDrawer from "../components/ProductDrawer";
 
 function Products() {
@@ -95,7 +94,6 @@ function Products() {
       .catch((err) => console.log(err));
     onClose();
     getProducts();
-    // 17:58
   };
 
   return (

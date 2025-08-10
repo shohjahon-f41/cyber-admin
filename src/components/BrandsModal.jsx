@@ -1,5 +1,5 @@
 import { Form, Input, message, Modal } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { API } from "../api";
 import { urls } from "../constants/urls";
 
@@ -9,12 +9,19 @@ function BrandsModal({
   loading,
   setLoading,
   getBrands,
+  editingData,
+  setEditingData,
 }) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
+  useEffect(() => {
+    form.setFieldsValue(editingData);
+  }, [editingData]);
+
   function handleCancel() {
     setModalOpen(false);
+    setEditingData(null);
     form.resetFields();
   }
 
@@ -23,42 +30,63 @@ function BrandsModal({
   };
 
   const handleSubmit = (value) => {
-    // form.submit()
-    setLoading(true);
-    API.post(urls.brands.post, value)
-      .then((res) => {
-        if (res.status === 201) {
-          messageApi.success("Succes");
-          handleCancel();
-          getBrands();
-        }
-      })
-      .catch((err) =>
-        messageApi.open({
-          type: "error",
-          content:
-            err.response?.status && err.response?.data?.message
-              ? `${err.response.status}: ${err.response.data.message}`
-              : "Что-то пошло не так при добавлении бренда",
+    if (editingData === null) {
+      setLoading(true);
+      API.post(urls.brands.post, value)
+        .then((res) => {
+          if (res.status === 201) {
+            messageApi.success("Succes");
+            handleCancel();
+            getBrands();
+          }
         })
-      )
-      .finally(() => {
-        setLoading(false);
-      });
-    // console.log(value);
-    // setModalOpen(false);
+        .catch((err) =>
+          messageApi.open({
+            type: "error",
+            content:
+              err.response?.status && err.response?.data?.message
+                ? `${err.response.status}: ${err.response.data.message}`
+                : "Error",
+          })
+        )
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(true);
+      API.patch(urls.brands.patch(editingData.id), value)
+        .then((res) => {
+          if ([200, 201].includes(res.status)) {
+            messageApi.success("Successfully updated!");
+            getBrands();
+            handleCancel();
+          }
+        })
+        .catch((err) => {
+          messageApi.open({
+            type: "error",
+            content:
+              err.response?.status && err.response?.data?.message
+                ? `${err.response.status}: ${err.response.data.message}`
+                : "Error",
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   return (
     <>
       {contextHolder}
       <Modal
-        title="Basic Modal"
+        title={`${editingData === null ? "Add" : "Edit"} Modal`}
         closable={{ "aria-label": "Custom Close Button" }}
         open={ModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
-        okText={"Add"}
+        okText={`${editingData === null ? "Add" : "Edit"}`}
         // loading={loading}
         okButtonProps={{ htmlType: "submit", loading: loading }}
       >
@@ -67,6 +95,7 @@ function BrandsModal({
           form={form}
           onFinish={handleSubmit}
           autoComplete="on"
+          
         >
           <Form.Item
             label="Name"
