@@ -22,7 +22,7 @@ const { Header, Sider, Content } = Layout;
 const AdminLayot = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { Logout } = useContext(AuthContext);
-  const confirm = (e) => {
+  const confirm = () => {
     Logout();
   };
 
