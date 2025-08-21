@@ -1,20 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Checkbox, Form, Input, message } from "antd";
 import axios from "axios";
-// 1:13
+import { urls } from "../constants/urls";
+import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import { AuthContext } from "../contexts/AuthContext";
 
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 function Login() {
   const [messageApi, contextHolder] = message.useMessage();
+  const { setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
   const key = "updatable";
   const onFinish = (values) => {
-    axios
-      .post("https://302d37aacffa4da5.mokky.dev/auth", values)
+    API.post(urls.auth, values)
       .then((res) => {
         if (res.status === 201) {
-          localStorage.setItem("token", res.data.token);  
+          setUser();
+          localStorage.setItem("token", res.data.token);
         }
       })
       .catch((err) => {
